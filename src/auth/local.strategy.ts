@@ -3,6 +3,7 @@ import { Strategy } from 'passport-local';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/users/user.service';
 import { User } from 'src/users/user.model';
+import { comparePassword } from 'src/utils';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -10,14 +11,13 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super({ usernameField: 'email' });
   }
 
-  async validate(email: string, password: string): Promise<User> {
+  async validate(email: string, password: string): Promise<any> {
     const user = await this.userService.findOne(email);
     if (!user) throw new UnauthorizedException();
-    console.log('user', user);
 
-    if (user.password == password)
+    if (comparePassword(password, user.password))
       return {
-        // id: user._id,
+        id: user._id,
         email: user.email,
         fullName: user.fullName,
         password: user.password,
