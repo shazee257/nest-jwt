@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { UserModule } from './users/user.module';
 import { AuthModule } from './auth/auth.module';
 import { MulterModule } from '@nestjs/platform-express';
@@ -25,7 +24,7 @@ import { join } from 'path';
     UserModule,
     AuthModule,
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [],
 })
 export class AppModule {}
