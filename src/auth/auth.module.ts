@@ -13,7 +13,7 @@ import { AuthController } from './auth.controller';
     UserModule,
     JwtModule.register({
       secret: 'secret',
-      signOptions: { expiresIn: '5m' },
+      signOptions: { expiresIn: '1y' },
     }),
   ],
   controllers: [AuthController],
