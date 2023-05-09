@@ -1,5 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { User } from './user.model';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { User, Location } from './user.model';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
@@ -13,11 +18,20 @@ export class UserService {
   ) {}
 
   async findAll(): Promise<User[]> {
-    return await this.userModel.find().exec();
+    try {
+      const users = await this.userModel.find().exec();
+      return users;
+    } catch (error) {
+      throw new HttpException('Users not found', HttpStatus.NOT_FOUND);
+    }
   }
 
   async findUser(query: {}): Promise<User> {
-    return await this.userModel.findOne(query).exec();
+    try {
+      return await this.userModel.findOne(query).exec();
+    } catch (error) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
@@ -36,34 +50,25 @@ export class UserService {
     return await newUser.save();
   }
 
-  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<any> {
+  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.userModel.findById(id).exec();
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
-    if (updateUserDto.fullName) user.fullName = updateUserDto.fullName;
-    if (updateUserDto.mobile) user.mobile = updateUserDto.mobile;
-    if (updateUserDto.businessName)
-      user.businessName = updateUserDto.businessName;
+    const obj: any = JSON.parse(JSON.stringify(updateUserDto));
+    const location: Location = {
+      type: 'Point',
+      coordinates: [updateUserDto.longitude, updateUserDto.latitude],
+    };
 
-    // if user.location.coordinates is not set
-    if (!user.location.coordinates) {
-      if (!updateUserDto.latitude && !updateUserDto.longitude) {
-        throw new HttpException(
-          'Please provide latitude and longitude',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    }
-    if (updateUserDto.latitude && updateUserDto.longitude) {
-      user.location = {
-        type: 'Point',
-        coordinates: [updateUserDto.longitude, updateUserDto.latitude],
-      };
-    }
+    obj.location = location;
 
-    return await user.save();
+    const updatedUser = await this.userModel.findByIdAndUpdate(id, obj, {
+      new: true,
+    });
+
+    return updatedUser;
   }
 
   async updateFcm(id: string, fcmToken: string): Promise<User> {
@@ -77,5 +82,15 @@ export class UserService {
     }
 
     return user;
+  }
+
+  async uploadImage(id: string, filename: string): Promise<User> {
+    const user = await this.userModel.findById(id).exec();
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    user.image = 'users/' + filename;
+    return await user.save();
   }
 }

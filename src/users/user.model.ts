@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose';
+import { Schema, Document } from 'mongoose';
 
 export const UserSchema = new Schema(
   {
@@ -20,7 +20,7 @@ export const UserSchema = new Schema(
 
     gender: { type: String, enum: ['male', 'female', 'other'] },
     isActive: { type: Boolean, default: true },
-    isVerified: { type: Boolean, default: true },
+    isVerified: { type: Boolean, default: false },
     fcmToken: String,
   },
   { timestamps: true },
@@ -38,6 +38,11 @@ UserSchema.set('toJSON', {
   },
 });
 
+export interface Location {
+  type: string;
+  coordinates: [number, number];
+}
+
 export interface User {
   id: string;
   fullName: string;
@@ -47,11 +52,7 @@ export interface User {
 
   businessName: string;
   mobile: string;
-  location: {
-    type: string;
-    // coordinates is an array of numbers
-    coordinates: [number, number];
-  };
+  location: Location;
   url: string;
   image: string;
   userCover: string;

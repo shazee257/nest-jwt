@@ -10,7 +10,12 @@ import { join } from 'path';
 
 @Module({
   imports: [
-    MulterModule.register({ dest: './uploads' }),
+    // MulterModule.register({ dest: './uploads' }),
+    MulterModule.registerAsync({
+      useFactory: () => ({
+        dest: './uploads',
+      }),
+    }),
     ConfigModule.forRoot({ envFilePath: '.local.env', isGlobal: true }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],

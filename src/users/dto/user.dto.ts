@@ -3,7 +3,9 @@ import {
   IsEmail,
   IsOptional,
   IsNotEmpty,
-  Matches,
+  Max,
+  Min,
+  IsNumber,
 } from 'class-validator';
 
 // create user dto
@@ -19,10 +21,6 @@ export class CreateUserDto {
   @IsNotEmpty()
   password: string;
 
-  // @IsString()
-  // @IsNotEmpty()
-  // confirmPassword: string;
-
   @IsString()
   @IsNotEmpty()
   role: string;
@@ -30,18 +28,34 @@ export class CreateUserDto {
 
 // update user dto
 export class UpdateUserDto {
-  @IsOptional()
+  @IsNotEmpty()
   fullName: string;
 
-  @IsOptional()
-  mobile: string;
-
-  @IsOptional()
+  @IsNotEmpty()
   businessName: string;
 
-  @IsOptional()
+  @IsNotEmpty()
+  mobile: string;
+
+  @IsNotEmpty()
+  dob: Date;
+
+  @IsNotEmpty()
+  url: string;
+
+  @IsString()
+  @IsNotEmpty()
+  gender: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(-90)
+  @Max(90)
   latitude: number;
 
-  @IsOptional()
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(-180)
+  @Max(180)
   longitude: number;
 }
