@@ -25,20 +25,21 @@ export class UserController {
     return this.userService.createUser(createUserDto);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Get('/me')
+  @UseGuards(AuthGuard('jwt'))
   getUser(@Request() req) {
     return this.userService.findUser({ _id: req.user.id });
   }
 
-  // update user
-  @UseGuards(AuthGuard('jwt'))
   @Put('/update/me')
+  @UseGuards(AuthGuard('jwt'))
   updateUser(@Request() req, @Body() updateUserDto: UpdateUserDto) {
+    
     return this.userService.updateUser(req.user.id, updateUserDto);
   }
 
   @Get()
+  @UseGuards(AuthGuard('jwt'))
   findAll() {
     return this.userService.findAll();
   }

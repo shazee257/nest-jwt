@@ -24,6 +24,10 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   role: string;
+
+  @IsNotEmpty()
+  @IsString()
+  fcmToken: string;
 }
 
 // update user dto
@@ -58,4 +62,39 @@ export class UpdateUserDto {
   @Min(-180)
   @Max(180)
   longitude: number;
+
+  // working days
+  @IsNotEmpty()
+  workingDays: {
+    Monday: {
+      ON: boolean;
+      startTime: string;
+      endTime: string;
+    };
+    Tuesday: {
+      ON: boolean;
+      startTime: string;
+      endTime: string;
+    };
+    Wednesday: {
+      ON: boolean;
+      startTime: string;
+      endTime: string;
+    };
+    Thursday: {
+      ON: boolean;
+      startTime: string;
+      endTime: string;
+    };
+    Friday: {
+      ON: boolean;
+      startTime: string;
+      endTime: string;
+    };
+    Saturday: {
+      ON: boolean;
+      startTime: string;
+      endTime: string;
+    };
+  };
 }

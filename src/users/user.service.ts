@@ -46,6 +46,7 @@ export class UserService {
     newUser.email = createUserDto.email;
     newUser.password = hashPassword(createUserDto.password);
     newUser.role = createUserDto.role;
+    newUser.fcmToken = createUserDto.fcmToken;
 
     return await newUser.save();
   }
@@ -56,13 +57,13 @@ export class UserService {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
-    const obj: any = JSON.parse(JSON.stringify(updateUserDto));
-    const location: Location = {
-      type: 'Point',
-      coordinates: [updateUserDto.longitude, updateUserDto.latitude],
+    const obj: any = {
+      ...updateUserDto,
+      location: {
+        type: 'Point',
+        coordinates: [updateUserDto.longitude, updateUserDto.latitude],
+      },
     };
-
-    obj.location = location;
 
     const updatedUser = await this.userModel.findByIdAndUpdate(id, obj, {
       new: true,

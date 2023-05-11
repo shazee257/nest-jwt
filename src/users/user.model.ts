@@ -1,11 +1,12 @@
-import { Schema, Document } from 'mongoose';
+import { Schema } from 'mongoose';
 
 export const UserSchema = new Schema(
   {
+    apple_id: String,
     fullName: String,
     email: String,
     password: String,
-    role: String,
+    role: { type: String, enum: ['donor', 'donee', 'volunteer', 'admin'] },
 
     businessName: String,
     mobile: String,
@@ -22,6 +23,45 @@ export const UserSchema = new Schema(
     isActive: { type: Boolean, default: true },
     isVerified: { type: Boolean, default: false },
     fcmToken: String,
+
+    workingDays: {
+      Monday: {
+        ON: { type: Boolean, default: false },
+        startTime: { type: String, default: '09:00 AM' },
+        endTime: { type: String, default: '06:00 PM' },
+      },
+      Tuesday: {
+        ON: { type: Boolean, default: false },
+        startTime: { type: String, default: '09:00 AM' },
+        endTime: { type: String, default: '06:00 PM' },
+      },
+      Wednesday: {
+        ON: { type: Boolean, default: false },
+        startTime: { type: String, default: '09:00 AM' },
+        endTime: { type: String, default: '06:00 PM' },
+      },
+      Thursday: {
+        ON: { type: Boolean, default: false },
+        startTime: { type: String, default: '09:00 AM' },
+        endTime: { type: String, default: '06:00 PM' },
+      },
+      Friday: {
+        ON: { type: Boolean, default: false },
+        startTime: { type: String, default: '09:00 AM' },
+        endTime: { type: String, default: '06:00 PM' },
+      },
+      Saturday: {
+        ON: { type: Boolean, default: false },
+        startTime: { type: String, default: '09:00 AM' },
+        endTime: { type: String, default: '06:00 PM' },
+      },
+      Sunday: {
+        ON: { type: Boolean, default: false },
+        startTime: { type: String, default: '09:00 AM' },
+        endTime: { type: String, default: '06:00 PM' },
+      },
+    },
+    // categoryIds: [{ type: Types.ObjectId, ref: 'category' }],
   },
   { timestamps: true },
 );
@@ -45,6 +85,7 @@ export interface Location {
 
 export interface User {
   id: string;
+  apple_id: String;
   fullName: string;
   email: string;
   password: string;
@@ -62,4 +103,45 @@ export interface User {
   isActive: boolean;
   isVerified: boolean;
   fcmToken: string;
+
+  workingDays: {
+    Monday: {
+      ON: boolean;
+      startTime: string;
+      endTime: string;
+    };
+    Tuesday: {
+      ON: boolean;
+      startTime: string;
+      endTime: string;
+    };
+    Wednesday: {
+      ON: boolean;
+      startTime: string;
+      endTime: string;
+    };
+    Thursday: {
+      ON: boolean;
+      startTime: string;
+      endTime: string;
+    };
+    Friday: {
+      ON: boolean;
+      startTime: string;
+      endTime: string;
+    };
+    Saturday: {
+      ON: boolean;
+      startTime: string;
+      endTime: string;
+    };
+    Sunday: {
+      ON: boolean;
+      startTime: string;
+      endTime: string;
+    };
+  };
+  // categoryIds: string[];
+  createdAt: Date;
+  updatedAt: Date;
 }
