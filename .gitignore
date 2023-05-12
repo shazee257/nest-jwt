@@ -2,6 +2,10 @@
 /dist
 /node_modules
 
+*.lock.json
+*.lock
+
+
 # Logs
 logs
 *.log

@@ -7,15 +7,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigService } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { OtpModule } from './otp/otp.module';
 
 @Module({
   imports: [
-    // MulterModule.register({ dest: './uploads' }),
-    MulterModule.registerAsync({
-      useFactory: () => ({
-        dest: './uploads',
-      }),
-    }),
+    MulterModule.registerAsync({ useFactory: () => ({ dest: './uploads' }) }),
     ConfigModule.forRoot({ envFilePath: '.local.env', isGlobal: true }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -28,6 +24,7 @@ import { join } from 'path';
 
     UserModule,
     AuthModule,
+    OtpModule,
   ],
   controllers: [],
   providers: [],

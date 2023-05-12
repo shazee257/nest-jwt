@@ -7,3 +7,7 @@ export const hashPassword = (password: string): string => {
 export const comparePassword = (password: string, hash: string): boolean => {
   return bcrypt.compareSync(password, hash);
 };
+
+export const generateRandomOTP = () => {
+  return Math.floor(1000 + Math.random() * 9000);
+};

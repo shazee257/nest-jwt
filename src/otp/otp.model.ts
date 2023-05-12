@@ -19,6 +19,6 @@ export interface Otp {
   id: string;
   email: string;
   otp: number;
-  createdAt: Date;
-  updatedAt: Date;
+  // createdAt: Date;
+  // updatedAt: Date;
 }
