@@ -98,3 +98,13 @@ export class UpdateUserDto {
     };
   };
 }
+
+export class ResetPasswordDto {
+  @IsString()
+  @IsNotEmpty()
+  password: string;
+
+  @IsString()
+  @IsNotEmpty()
+  confirmPassword: string;
+}

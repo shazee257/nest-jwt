@@ -1,14 +1,10 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { User, Location } from './user.model';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { User } from './user.model';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
-import { hashPassword } from 'src/utils';
+import { CreateUserDto, ResetPasswordDto, UpdateUserDto } from './dto/user.dto';
+import { getEndPoint, getPaginatedData, hashPassword } from 'src/utils';
+import { Request } from 'express';
 
 @Injectable()
 export class UserService {
@@ -17,10 +13,24 @@ export class UserService {
     private readonly userModel: Model<User>,
   ) {}
 
-  async findAll(): Promise<User[]> {
+  async findAll(req: Request): Promise<any> {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+
+    const endPoint = getEndPoint(req.originalUrl);
+
     try {
-      const users = await this.userModel.find().exec();
-      return users;
+      const { result, pagination } = await getPaginatedData({
+        model: this.userModel,
+        page,
+        limit,
+        query: {},
+        sort: { createdAt: -1 },
+        populate: '',
+        endPoint,
+      } as any);
+
+      return { result, pagination };
     } catch (error) {
       throw new HttpException('Users not found', HttpStatus.NOT_FOUND);
     }
@@ -92,6 +102,30 @@ export class UserService {
     }
 
     user.image = 'users/' + filename;
+    return await user.save();
+  }
+
+  async updateUserByQuery(query: {}, update: {}): Promise<User> {
+    return await this.userModel.findOneAndUpdate(query, update, { new: true });
+  }
+
+  async resetPassword(
+    id: string,
+    resetPasswordDto: ResetPasswordDto,
+  ): Promise<User> {
+    if (resetPasswordDto.password !== resetPasswordDto.confirmPassword) {
+      throw new HttpException(
+        'Password and confirm password does not match',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const user = await this.userModel.findById(id).exec();
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    user.password = hashPassword(resetPasswordDto.password);
     return await user.save();
   }
 }

@@ -20,10 +20,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   async validate(req: Request, email: string, password: string): Promise<User> {
     const body: any = req.body;
     if (!body.fcmToken)
-      throw new HttpException(
-        'Device Token is required',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException('fcmToken is required', HttpStatus.BAD_REQUEST);
 
     const user: User = await this.userService.findUser({ email });
     if (!user) throw new UnauthorizedException();
