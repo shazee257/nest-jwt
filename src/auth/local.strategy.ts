@@ -7,7 +7,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
-import { User } from 'src/users/user.model';
+import { User } from 'src/users/model/user.model';
 import { comparePassword } from 'src/utils';
 import { UserService } from 'src/users/user.service';
 

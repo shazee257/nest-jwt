@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { Otp } from './otp.model';
+import { Otp } from './model/otp.model';
 import { InjectModel } from '@nestjs/mongoose';
 import { createOtpDto, verifyOtpDto } from './dto/otp.dto';
 import { UserService } from 'src/users/user.service';

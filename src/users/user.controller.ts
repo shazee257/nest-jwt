@@ -43,7 +43,7 @@ export class UserController {
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  findAll(@Req() req: Request) {
+  findAll(@Req() req: Request): Promise<any> {
     return this.userService.findAll(req);
   }
 

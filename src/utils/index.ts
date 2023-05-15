@@ -21,6 +21,10 @@ export const otpExpiry = (createdAt: Date): boolean => {
   return false;
 };
 
+export const getEndPoint = (url: string): string => {
+  return url.split('?')[0].split('/')[2];
+};
+
 export async function getPaginatedData({
   model,
   page = 1,
@@ -75,6 +79,57 @@ export async function getPaginatedData({
   return { result, pagination };
 }
 
-export const getEndPoint = (url: string): string => {
-  return url.split('?')[0].split('/')[2];
-};
+export async function getAggregatedPaginatedData({
+  model,
+  page = 1,
+  limit = 10,
+  query = [],
+  endPoint,
+}: {
+  model: any;
+  page: number;
+  limit: number;
+  query: any;
+  endPoint: string;
+}): Promise<any> {
+  const pipeline = [...query, { $count: 'totalCount' }];
+  let totalCount = await model.aggregate(pipeline);
+  if (totalCount.length > 0) totalCount = totalCount[0].totalCount;
+  else totalCount = 0;
+  if (totalCount == 0) return { result: [], pagination: {} };
+
+  const totalPages = Math.ceil(totalCount / limit);
+  const hasNextPage = page < totalPages;
+  const hasPrevPage = page > 1;
+
+  const resultPipeline = [
+    ...query,
+    // add pagination
+    { $skip: (page - 1) * limit },
+    { $limit: limit },
+  ];
+
+  const result = await model.aggregate(resultPipeline);
+
+  const pagination = {
+    currentPage: page,
+    totalPages,
+    hasNextPage,
+    hasPrevPage,
+    totalItems: totalCount,
+    nextPage: null,
+    prevPage: null,
+  };
+
+  if (hasNextPage)
+    pagination.nextPage = `${process.env.BASE_URL}/api/${
+      endPoint ? endPoint : ''
+    }?page=${Number(page) + 1}&limit=${limit}`;
+
+  if (hasPrevPage)
+    pagination.prevPage = `${process.env.BASE_URL}/api/${
+      endPoint ? endPoint : ''
+    }?page=${Number(page) - 1}&limit=${limit}`;
+
+  return { result, pagination };
+}

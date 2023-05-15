@@ -1,10 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { User } from './user.model';
+import { User, UserObjectJWT } from './model/user.model';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto, ResetPasswordDto, UpdateUserDto } from './dto/user.dto';
-import { getEndPoint, getPaginatedData, hashPassword } from 'src/utils';
+import {
+  getAggregatedPaginatedData,
+  getEndPoint,
+  hashPassword,
+} from 'src/utils';
 import { Request } from 'express';
+import { fetchAllUsers } from './model/user.query';
 
 @Injectable()
 export class UserService {
@@ -16,23 +21,21 @@ export class UserService {
   async findAll(req: Request): Promise<any> {
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
-
+    const { q = '' } = req.body;
+    const user: UserObjectJWT = req.user as any;
     const endPoint = getEndPoint(req.originalUrl);
 
     try {
-      const { result, pagination } = await getPaginatedData({
+      const { result, pagination } = await getAggregatedPaginatedData({
         model: this.userModel,
+        query: fetchAllUsers(user.id, q),
         page,
         limit,
-        query: {},
-        sort: { createdAt: -1 },
-        populate: '',
         endPoint,
-      } as any);
-
+      });
       return { result, pagination };
     } catch (error) {
-      throw new HttpException('Users not found', HttpStatus.NOT_FOUND);
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -40,7 +43,7 @@ export class UserService {
     try {
       return await this.userModel.findOne(query).exec();
     } catch (error) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
 

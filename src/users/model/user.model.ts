@@ -145,3 +145,12 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface UserObjectJWT {
+  id: string;
+  fullName: string;
+  email: string;
+  role: string;
+  iat: number;
+  exp: number;
+}
